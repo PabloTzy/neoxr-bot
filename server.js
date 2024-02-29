@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const env = require('./config.json')
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 3000
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 let i = 0
 
